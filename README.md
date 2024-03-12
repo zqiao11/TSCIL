@@ -12,7 +12,8 @@
 <!-- ABOUT THE PROJECT -->
 ## Class-incremental Learning for Time Series: Benchmark and Evaluation
 
-A unified experimental framework for Time Series Class-Incremental Learning (TSCIL) based on Pytorch. Our CIL benchmarks are established with open-sourced real-world time series datasets. Based on these, our toolkit provides a simple way to customize the continual learning settings. Hyperparameter selection is based on [Ray Tune](https://docs.ray.io/en/latest/tune/index.html). 
+A unified experimental framework for Time Series Class-Incremental Learning (TSCIL) based on Pytorch. The paper is currently under review and avaible on [arxiv](https://arxiv.org/abs/2402.12035). Our CIL benchmarks are established with open-sourced real-world time series datasets. Based on these, our toolkit provides a simple way to customize the continual learning settings. Hyperparameter selection is based on [Ray Tune](https://docs.ray.io/en/latest/tune/index.html). 
+
 
 [//]: # (Public time series datasets for Human Activity Recognition or Gesture Recognition are used. All the selected datasets are balanced. Two backbones &#40;1D-CNN and Time Series Transformer&#41; are included. We also consider the impact of different normalization layers &#40;BN and LN&#41; in Continual Learning.)
 
