@@ -54,14 +54,19 @@ A unified experimental framework for Time Series Class-Incremental Learning (TSC
 
 
 ### Data Prepareation
-We process each dataset individually by executing the corresponding `.py` files located in `data` directory. This process results in the formation of training and test `np.array` data, which are saved as `.pkl` files in `data/saved`. 
+We process each dataset individually by executing the corresponding `.py` files located in `data` directory. This process results in the formation of training and test `np.array` data, which are saved as `.pkl` files in `data/saved`. The samples are processed into the shape of (𝐿,𝐶).
 
-For UCI-HAR, Uwave and Dailysports, we directly use the original raw time series as samples. For the remaining, we use sliding windows to extract samples with appropriate sequence length (downsampling may be applied before window sliding). If the original dataset is not pre-divided into training and testing sets, a manual split into train and test sets will be conducted. Information about the processed data can be found in `utils/setup_elements.py`. The saved data are **not preprocessed with normalization** since the continual learning setup. Instead, we add a non-trainable input normalization layer before the encoder to do the sample-wise normalization. 
+For datasets comprising discrete sequences (UCI-HAR, Uwave and Dailysports), we directly use their original raw sequences as samples. For datasets comprising long-term, continuous signals (GrabMyo and WISDM), we apply sliding window techniques to segment these signals into
+appropriately shaped samples (downsampling may be applied before window sliding). If the original dataset is not pre-divided into training and testing sets, a manual train-test split will be conducted. Information about the processed data can be found in `utils/setup_elements.py`. The saved data are **not preprocessed with normalization** due to the continual learning setup. Instead, we add a *non-trainable* input normalization layer before the encoder to do the sample-wise normalization. 
 
-We provide the processed data files for convenience. Please check the setup in the "Get Started" section.
+For convenience, we provide the processed data files for direct download. Please check the "Setup" part in the "Get Started" section.
 
 ### Adding New Dataset
-Create a new python file in `data` for the new dataset. Process the data to form samples with identical sequence length using sliding window. Then perform the train-test split. Save the numpy arrays of training data, training labels, test data, and test labels into `x_train.pkl`, `state_train.pkl`,`x_test.pkl`, `state_test.pkl` in a new folder in `data/saved`. Finally, add the necessary information of the dataset in `utils/setup_elements.py`
+1. Create a new python file in the `data` directory for the new dataset.
+2. Format the data into discrete samples in format of numpy array, ensuring each sample maintains the shape of (𝐿,𝐶). Use downsampling or sliding window if needed.
+3. If the dataset is not pre-divided into training and test subsets, perform the train-test split manually.
+4. Save the numpy arrays of training data, training labels, test data, and test labels into `x_train.pkl`, `state_train.pkl`,`x_test.pkl`, `state_test.pkl` in a new folder in `data/saved`.
+5. Finally, add the necessary information of the dataset in `utils/setup_elements.py`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -86,7 +91,11 @@ Replay-based:
 * [Mnemonics](https://arxiv.org/abs/2002.10211)
 
 ### Adding New Algorithm
-Create a new python file in `agent` for the new algorithm. Create a subclass that inherits from the `BaseLearner` class in `agent/base.py`. Then custom methods `train_epoch()`, `after_task()` and `learn_task()` based on your needs. Finally, add the new method to the dictionary in `agents/utils/name_match.py`.
+1. Create a new python file in the `agent` directory for the new algorithm.
+2. Create a subclass that inherits from the `BaseLearner` class in `agent/base.py`.
+3. Customize methods including `train_epoch()`, `after_task()`, `learn_task()` and so on, based on your needs.
+4. Add the new algorithm to `agents` in `agents/utils/name_match.py`. If memory buffer is used, add it into `agents_replay` as well.
+5. Add the hyperparameters and their ranges for the new algorithm into `config_cl` within `experiment/tune_config.py`.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -101,33 +110,33 @@ Create a new python file in `agent` for the new algorithm. Create a subclass tha
    unzip <dataset>.zip
    ```
    You can also download the raw datasets and process the data with the corresponding python files.
-2. Revise the following to suit your device:
+2. Revise the following configurations to suit your device:
     * `resources` in `tune_hyper_params` in `experiment/tune_and_exp.py` (See [here](https://docs.ray.io/en/latest/tune/tutorials/tune-resources.html) for details)
-    * GPU numbers in the `.sh` files in `shell`
+    * GPU numbers in the `.sh` files in `shell`.
 
 ### Run Experiment
 
 There are two functions to run experiments. Set the arguments in the corresponding files or in the command line.
 
-1. Run CIL experiments with custom configurations. Note that this function cannot tune/change the hyperparameters for multiple runs. It is used for sanity check or debugging.
+1. Run CIL experiments with custom configurations in `main.config.py`. Note that this function cannot tune/change the hyperparameters for multiple runs. It is recommended for use in sanity checks or debugging.
    ```sh
    python main_config.py
    ```
 
-2. Tune the hyperparameters on the `Val Tasks` first, and then use the best hyperparameters to run experiments on the `Exp Tasks`:
+2. Tune the hyperparameters on the `Val Tasks` first, and then use the best hyperparameters to run experiment on the `Exp Tasks`:
    
    ```sh
-   python main_tune.py
+   python main_tune.py --data DATA_NAME --agent AGENT_NAME --norm BN/LN
    ```
-   To run multiple experiments, you can revise and call `shell/tune_and_exp.sh`:
+   To run multiple experiments, you can revise the script `shell/tune_and_exp.sh` and call it:
    ```sh
    nohup sh shell/tune_and_exp.sh &
    ```
-   To reproduce all the experiments in the paper, use the corresponding `.sh` files:
+   To **reproduce the results in the paper**, use the corresponding `.sh` files:
    ```sh
    nohup sh shell/{data}_all_exp.sh &
    ```
-    We run the experiment for multiple times/runs to compute average performance. In each run, we randomize the class order and tune the best hyperparameters. So the hyperparameters are different across runs. Experiment results will be saved into `result/tune_and_exp`.
+    We run the experiment for multiple runs to compute the average performance. In each run, we randomize the class order and tune the best hyperparameters. So the hyperparameters are different across runs. The searching grid of hyperparamteters is set in `experiment/tune_config.py`. Experiment results will be saved as log into `result/tune_and_exp`.
 
 ### Custom Experiment Setup
 Change the configurations in 
@@ -135,6 +144,9 @@ Change the configurations in
 * `experiment/tune_config.py`: Parameters for `main_tune.py` experiments, such as Memory Budget / Classifier Type / Number of runs / Agent-specific parameters, etc.
 
 For ablation study, revise the corresponding parameters in `experiment/tune_config.py` and rerun the experiments.
+
+For online continual learning, set `epochs` to 1 and `er_mode` to `online`. (beta)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
