@@ -11,11 +11,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train the continual learning agent on task sequence')
 
     # #################### Main setting for the experiment ####################
-    parser.add_argument('--agent', dest='agent', default='GR', type=str,
+    parser.add_argument('--agent', dest='agent', default='ER', type=str,
                         choices=['SFT', 'Offline',
                                  'LwF', 'EWC', 'SI', 'MAS', 'DT2W',
                                  'ER', 'ASER', 'DER', 'Herding', 'CLOPS', 'ER_Sub'  # ER_Sub is only applicable to DSA
-                                 'Mnemonics', 'Inversion', 'GR'],
+                                 'Mnemonics', 'Inversion', 'GR',
+                                 'FastICARL'],
                         help='Continual learning agent')
 
     parser.add_argument('--scenario', type=str, default='class',

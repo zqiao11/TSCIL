@@ -9,6 +9,10 @@ from agents.lwf import loss_fn_kd
 
 
 class DT2W(BaseLearner):
+    """
+    Class-Incremental Learning on Multivariate Time Series Via Shape-Aligned Temporal Distillation, ICASSP 2023
+    """
+
     def __init__(self, model, args):
         super(DT2W, self).__init__(model, args)
         self.use_kd = True
@@ -36,7 +40,7 @@ class DT2W(BaseLearner):
         epoch_loss = 0
         n_old_classes = self.teacher.head.out_features if self.teacher is not None else 0
         use_cuda = True if self.device == 'cuda' else False
-            
+
         if self.fmap_kd_metric == 'dtw':
             similarity_metric = SoftDTW(use_cuda=use_cuda, gamma=1, normalize=False)
         elif self.fmap_kd_metric == 'euclidean':
@@ -107,7 +111,8 @@ class DT2W(BaseLearner):
                     loss_protoAug = self.lambda_protoAug * loss_protoAug
 
             if self.adaptive_weight:
-                step_loss = 1 / (self.task_now + 1) * loss_new + (1 - 1 / (self.task_now + 1)) * (loss_kd + loss_protoAug)
+                step_loss = 1 / (self.task_now + 1) * loss_new + (1 - 1 / (self.task_now + 1)) * (
+                            loss_kd + loss_protoAug)
             else:
                 step_loss = loss_new + loss_kd + loss_protoAug
             step_loss.backward()

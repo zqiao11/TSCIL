@@ -4,6 +4,9 @@ from utils.buffer.buffer import Buffer
 
 
 class ASER(BaseLearner):
+    """
+    Online Class-Incremental Continual Learning with Adversarial Shapley Value, AAAI 2021
+    """
     def __init__(self, model, args):
         super(ASER, self).__init__(model, args)
         args.eps_mem_batch = args.batch_size

@@ -13,6 +13,7 @@ from agents.clops import CLOPS
 from agents.der import DarkExperienceReplay
 from agents.gr import GenerativeReplay
 from agents.er_sub import ER_on_Subject
+from agents.fast_icarl import FastICARL
 
 
 agents = {'SFT': SequentialFineTune,
@@ -30,6 +31,7 @@ agents = {'SFT': SequentialFineTune,
           'CLOPS': CLOPS,
           'DER': DarkExperienceReplay,
           'GR': GenerativeReplay,
+          'FastICARL': FastICARL
           }
 
-agents_replay = ['ER', 'DER', 'Herding', 'Mnemonics', 'ASER', 'Inversion', 'CLOPS', 'GR', 'ER_Sub']
+agents_replay = ['ER', 'DER', 'Herding', 'Mnemonics', 'ASER', 'Inversion', 'CLOPS', 'GR', 'ER_Sub', 'FastICARL']
