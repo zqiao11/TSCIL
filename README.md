@@ -36,14 +36,19 @@ A unified experimental framework for Time Series Class-Incremental Learning (TSC
 
 ### Create Conda Environment
 
-1. Create the environment from the file
+1. Create the environment
    ```sh
-   conda env create -f environment.yml
+   conda create -n tscl python=3.9
    ```
 
 2. Activate the environment `tscl`
    ```sh
    conda activate tscl
+   ```
+
+3. Install the package into the environment
+   ```sh
+   pip install -r requirements.txt
    ```
 ----
 

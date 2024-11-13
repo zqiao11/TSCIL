@@ -1,0 +1,12 @@
+matplotlib
+matplotlib_venn
+numba
+numpy
+pandas
+psutil
+ray
+scikit_learn
+scipy
+seaborn
+torch
+tsai
